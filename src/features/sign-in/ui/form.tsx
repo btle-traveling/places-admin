@@ -8,6 +8,8 @@ import {
 } from "@/components/ui/card";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { signInFn } from "@/lib/auth";
+import { createOrUpdateSessionFn } from "@/lib/session";
 import { cn } from "@/lib/utils";
 import { useNavigate } from "@tanstack/react-router";
 import { type SubmitEvent, useRef } from "react";
@@ -26,19 +28,11 @@ export function Form({ className, ...props }: React.ComponentProps<"div">) {
       password: passwordInputRef.current.value,
     };
 
-    const response = await fetch("/sign-in", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        ...payload,
-      }),
+    const response = await signInFn({
+      data: payload,
     });
-    const json = await response.json();
-    await fetch("http://localhost:3000/session", {
-      method: "POST",
-      body: JSON.stringify({ ...json.data }),
+    await createOrUpdateSessionFn({
+      data: response.data,
     });
     navigate({
       to: "/",

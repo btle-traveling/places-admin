@@ -1,4 +1,5 @@
 import { getCurrentUser } from "@/services/user";
+import { SessionPayload } from "@/types/session";
 import { createServerFn } from "@tanstack/react-start";
 import { useAppSession } from "./session-client";
 
@@ -17,3 +18,17 @@ export const getCurrentUserFn = createServerFn({ method: "GET" }).handler(
     return result.value;
   },
 );
+
+export const signInFn = createServerFn({ method: "POST" })
+  .inputValidator((data: { username: string; password: string }) => data)
+  .handler(async ({ data }) => {
+    const newSessionPayload: SessionPayload = {
+      accessToken: "some-token",
+      email: data.username,
+      userId: 1,
+    };
+    return {
+      success: true,
+      data: newSessionPayload,
+    };
+  });
