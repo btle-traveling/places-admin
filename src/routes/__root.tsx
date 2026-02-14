@@ -2,9 +2,9 @@ import { TanStackDevtools } from "@tanstack/react-devtools";
 import { HeadContent, Scripts, createRootRoute } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 
-import appCss from "../styles.css?url";
 import { getThemeServerFn } from "@/lib/theme";
 import { ThemeProvider } from "@/providers/theme/provider";
+import appCss from "../styles.css?url";
 
 export const Route = createRootRoute({
   head: () => ({
@@ -29,6 +29,13 @@ export const Route = createRootRoute({
   }),
   loader: () => getThemeServerFn(),
   shellComponent: RootDocument,
+  errorComponent: ({ error }) => {
+    return (
+      <>
+        <h1>{error.message}</h1>
+      </>
+    );
+  },
 });
 
 function RootDocument({ children }: { children: React.ReactNode }) {
