@@ -1,18 +1,47 @@
 // utils/session.ts
-import { useSession } from "@tanstack/react-start/server"
-import type { SessionPayload } from "@/types/session"
+import { SessionPayload } from "@/types/session";
+import { createServerFn } from "@tanstack/react-start";
+import { useAppSession } from "./session-client";
 
-export function useAppSession() {
-    return useSession<SessionPayload>({
-        // Session configuration
-        name: "sky-search-web-app-session",
-        password: process.env.SESSION_SECRET!, // At least 32 characters
-        // Optional: customize cookie settings
-        cookie: {
-            secure: process.env.NODE_ENV === "production",
-            sameSite: "lax",
-            httpOnly: true,
-            maxAge: 1 * 24 * 60 * 60, // 1 days
+export const clearSessionFn = createServerFn({ method: "POST" }).handler(
+  async () => {
+    const session = await useAppSession();
+    session.clear();
+  },
+);
+
+export const getSessionFn = createServerFn({ method: "GET" }).handler(
+  async () => {
+    const session = await useAppSession();
+    if (session.data === undefined || session.data === null)
+      return {
+        success: false,
+        error: {
+          type: "SESSION_NOT_FOUND",
         },
-    })
-}
+      };
+    if (typeof session.data?.accessToken !== "string")
+      return {
+        success: false,
+        error: {
+          type: "TOKEN_NOT_FOUND",
+        },
+      };
+
+    return {
+      success: true,
+      data: session.data,
+    };
+  },
+);
+
+export const createOrUpdateSessionFn = createServerFn({ method: "POST" })
+  .inputValidator((data: SessionPayload) => data)
+  .handler(async ({ data }) => {
+    const session = await useAppSession();
+    const result = await session.update({ ...data });
+    return {
+      success: true,
+      data: result.data,
+    };
+  });
