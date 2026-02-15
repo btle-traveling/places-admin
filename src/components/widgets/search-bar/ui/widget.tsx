@@ -14,7 +14,7 @@ export function Widget({ value, onChange }: SearchBarProps) {
 				placeholder="Search locations, tags, or anything..."
 				value={value}
 				onChange={(e) => onChange(e.target.value)}
-				className="w-full rounded-lg border border-border bg-secondary/50 pl-10 pr-10 py-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition-colors"
+				className="w-full h-10 rounded-lg border border-border bg-secondary/50 pl-10 pr-10 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition-colors"
 			/>
 			{value && (
 				<button
