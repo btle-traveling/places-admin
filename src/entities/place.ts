@@ -1,8 +1,11 @@
-export interface Place {    
-    id: number;
-    name: string;
-    description: string;
-    latitude: number;
-    longitude: number;
-    imageUrl: string;
+export interface Places {
+  id: string
+  name: string
+  category: string
+  rating: number
+  reviews: number
+  image: string
+  price: string
+  distance: string
+  tags: string[]
 }
