@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { z } from "zod";
 import { useState, useMemo } from "react";
 import { SearchBarWidget } from "@/components/widgets/search-bar";
@@ -7,6 +7,7 @@ import { FilterDropdownWidget } from "@/components/widgets/filter-dropdown";
 import { LocationDetailsModalWidget } from "@/components/widgets/location-details-modal";
 import { getPlaces } from "@/services/places";
 import type { Place } from "@/entities/place";
+import { buttonVariants } from "@/components/ui/button";
 
 const locationSearchSchema = z.object({
 	search: z.string().optional().default(""),
@@ -127,18 +128,27 @@ function RouteComponent() {
 			</header>
 
 			<div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-				<div className="mb-6 flex items-center justify-between">
-					<p className="text-sm text-muted-foreground">
-						Showing{" "}
-						<span className="font-semibold text-foreground">
-							{filteredLocations.length}
-						</span>{" "}
-						of{" "}
-						<span className="font-semibold text-foreground">
-							{places.length}
-						</span>{" "}
-						locations
-					</p>
+				<div className="flex justify-between gap-6">
+					<div className="mb-6 flex items-center justify-between">
+						<p className="text-sm text-muted-foreground">
+							Showing{" "}
+							<span className="font-semibold text-foreground">
+								{filteredLocations.length}
+							</span>{" "}
+							of{" "}
+							<span className="font-semibold text-foreground">
+								{places.length}
+							</span>{" "}
+							locations
+						</p>
+					</div>
+
+					<Link
+						className={buttonVariants({ variant: "outline" })}
+						to="/new-location"
+					>
+						Add new location
+					</Link>
 				</div>
 
 				{filteredLocations.length > 0 ? (
