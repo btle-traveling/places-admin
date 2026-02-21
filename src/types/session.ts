@@ -1,5 +1,5 @@
 export interface SessionPayload {
-    userId: number
-    email: string
-    accessToken: string
+	userId: string;
+	email: string;
+	accessToken: string;
 }
