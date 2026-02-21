@@ -1,26 +1,35 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
-import { useMemo } from "react";
+import { useState, useMemo } from "react";
 import { SearchBarWidget } from "@/components/widgets/search-bar";
 import { LocationCardWidget } from "@/components/widgets/location-card";
 import { FilterDropdownWidget } from "@/components/widgets/filter-dropdown";
-import { LOCATIONS, CATEGORIES, PRICE_RANGES } from "@/data/locations";
+import { LocationDetailsModalWidget } from "@/components/widgets/location-details-modal";
+import { getPlaces } from "@/services/places";
+import type { Place } from "@/entities/place";
 
 const locationSearchSchema = z.object({
 	search: z.string().optional().default(""),
 	categories: z.array(z.string()).optional().default([]),
-	prices: z.array(z.string()).optional().default([]),
-	minRating: z.number().optional().default(0),
 });
 
 export const Route = createFileRoute("/_protected/locations")({
 	component: RouteComponent,
 	validateSearch: (search) => locationSearchSchema.parse(search),
+	async loader() {
+		const result = await getPlaces({ limit: 100 });
+		if (result.isErr()) {
+			throw new Error(result.error.message);
+		}
+		return { places: result.value };
+	},
 });
 
 function RouteComponent() {
+	const { places } = Route.useLoaderData();
 	const navigate = Route.useNavigate();
-	const { search, categories, prices, minRating } = Route.useSearch();
+	const { search, categories } = Route.useSearch();
+	const [selectedLocation, setSelectedLocation] = useState<Place | null>(null);
 
 	const setSearch = (value: string) => {
 		navigate({
@@ -28,31 +37,35 @@ function RouteComponent() {
 		});
 	};
 
-	const setMinRating = (value: number) => {
-		navigate({
-			search: (prev) => ({ ...prev, minRating: value }),
-		});
-	};
+	// Derive unique category names from the loaded places
+	const allCategories = useMemo(() => {
+		const set = new Set<string>();
+		for (const place of places) {
+			for (const cat of place.categories) {
+				set.add(cat.name);
+			}
+		}
+		return Array.from(set).sort();
+	}, [places]);
 
 	const filteredLocations = useMemo(() => {
-		return LOCATIONS.filter((location) => {
+		return places.filter((place) => {
 			const matchesSearch =
-				location.name.toLowerCase().includes(search.toLowerCase()) ||
-				location.tags.some((tag) =>
-					tag.toLowerCase().includes(search.toLowerCase()),
+				place.name.toLowerCase().includes(search.toLowerCase()) ||
+				(place.description ?? "")
+					.toLowerCase()
+					.includes(search.toLowerCase()) ||
+				place.categories.some((cat) =>
+					cat.name.toLowerCase().includes(search.toLowerCase()),
 				);
 
 			const matchesCategory =
-				categories.length === 0 || categories.includes(location.category);
+				categories.length === 0 ||
+				place.categories.some((cat) => categories.includes(cat.name));
 
-			const matchesPrice =
-				prices.length === 0 || prices.includes(location.price);
-
-			const matchesRating = location.rating >= (minRating ?? 0);
-
-			return matchesSearch && matchesCategory && matchesPrice && matchesRating;
+			return matchesSearch && matchesCategory;
 		});
-	}, [search, categories, prices, minRating]);
+	}, [search, categories, places]);
 
 	const toggleCategory = (category: string) => {
 		navigate({
@@ -66,25 +79,11 @@ function RouteComponent() {
 		});
 	};
 
-	const togglePrice = (price: string) => {
-		navigate({
-			search: (prev) => {
-				const current = prev.prices || [];
-				const next = current.includes(price)
-					? current.filter((p) => p !== price)
-					: [...current, price];
-				return { ...prev, prices: next };
-			},
-		});
-	};
-
 	const clearFilters = () => {
 		navigate({
 			search: {
 				search: "",
 				categories: [],
-				prices: [],
-				minRating: 0,
 			},
 		});
 	};
@@ -108,18 +107,19 @@ function RouteComponent() {
 								<SearchBarWidget value={search} onChange={setSearch} />
 							</div>
 							<FilterDropdownWidget
-								categories={CATEGORIES}
+								categories={allCategories}
 								selectedCategories={categories}
 								onCategoryToggle={toggleCategory}
-								priceRanges={PRICE_RANGES}
-								selectedPrices={prices}
-								onPriceToggle={togglePrice}
-								minRating={minRating}
-								onRatingChange={setMinRating}
+								priceRanges={[]}
+								selectedPrices={[]}
+								onPriceToggle={() => {}}
+								activeFiltersCount={categories.length}
 								onClearFilters={clearFilters}
-								activeFiltersCount={
-									categories.length + prices.length + (minRating > 0 ? 1 : 0)
+								// Passing undefined to hide the rating section
+								onRatingChange={
+									undefined as unknown as (rating: number) => void
 								}
+								minRating={0}
 							/>
 						</div>
 					</div>
@@ -133,6 +133,10 @@ function RouteComponent() {
 						<span className="font-semibold text-foreground">
 							{filteredLocations.length}
 						</span>{" "}
+						of{" "}
+						<span className="font-semibold text-foreground">
+							{places.length}
+						</span>{" "}
 						locations
 					</p>
 				</div>
@@ -140,7 +144,11 @@ function RouteComponent() {
 				{filteredLocations.length > 0 ? (
 					<div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
 						{filteredLocations.map((location) => (
-							<LocationCardWidget key={location.id} location={location} />
+							<LocationCardWidget
+								key={location.id}
+								location={location}
+								onClick={setSelectedLocation}
+							/>
 						))}
 					</div>
 				) : (
@@ -161,6 +169,12 @@ function RouteComponent() {
 					</div>
 				)}
 			</div>
+
+			<LocationDetailsModalWidget
+				location={selectedLocation}
+				isOpen={!!selectedLocation}
+				onClose={() => setSelectedLocation(null)}
+			/>
 		</div>
 	);
 }

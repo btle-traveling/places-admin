@@ -101,50 +101,56 @@ export function FilterDropdownWidget({
 						</div>
 					</div>
 
-					<DropdownMenuSeparator />
-
 					{/* Price Range */}
-					<div className="space-y-3">
-						<h5 className="text-sm font-medium">Price Range</h5>
-						<div className="flex gap-4">
-							{priceRanges.map((price) => (
-								<div key={price} className="flex items-center gap-2">
-									<Checkbox
-										id={`filter-price-${price}`}
-										checked={selectedPrices.includes(price)}
-										onCheckedChange={() => onPriceToggle(price)}
-										className="border-border"
-									/>
-									<Label
-										htmlFor={`filter-price-${price}`}
-										className="text-sm font-normal cursor-pointer leading-none"
-									>
-										{price}
-									</Label>
+					{priceRanges.length > 0 && (
+						<>
+							<DropdownMenuSeparator />
+							<div className="space-y-3">
+								<h5 className="text-sm font-medium">Price Range</h5>
+								<div className="flex gap-4">
+									{priceRanges.map((price) => (
+										<div key={price} className="flex items-center gap-2">
+											<Checkbox
+												id={`filter-price-${price}`}
+												checked={selectedPrices.includes(price)}
+												onCheckedChange={() => onPriceToggle(price)}
+												className="border-border"
+											/>
+											<Label
+												htmlFor={`filter-price-${price}`}
+												className="text-sm font-normal cursor-pointer leading-none"
+											>
+												{price}
+											</Label>
+										</div>
+									))}
 								</div>
-							))}
-						</div>
-					</div>
-
-					<DropdownMenuSeparator />
+							</div>
+						</>
+					)}
 
 					{/* Rating */}
-					<div className="space-y-4">
-						<div className="flex items-center justify-between">
-							<h5 className="text-sm font-medium">Minimum Rating</h5>
-							<span className="text-xs text-muted-foreground">
-								{minRating.toFixed(1)} stars
-							</span>
-						</div>
-						<Slider
-							value={[minRating]}
-							onValueChange={([value]) => onRatingChange(value)}
-							max={5}
-							min={0}
-							step={0.5}
-							className="w-full"
-						/>
-					</div>
+					{onRatingChange && minRating !== undefined && (
+						<>
+							<DropdownMenuSeparator />
+							<div className="space-y-4">
+								<div className="flex items-center justify-between">
+									<h5 className="text-sm font-medium">Minimum Rating</h5>
+									<span className="text-xs text-muted-foreground">
+										{minRating.toFixed(1)} stars
+									</span>
+								</div>
+								<Slider
+									value={[minRating]}
+									onValueChange={([value]) => onRatingChange(value)}
+									max={5}
+									min={0}
+									step={0.5}
+									className="w-full"
+								/>
+							</div>
+						</>
+					)}
 				</div>
 			</DropdownMenuContent>
 		</DropdownMenu>
