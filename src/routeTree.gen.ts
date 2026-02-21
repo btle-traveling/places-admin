@@ -13,6 +13,7 @@ import { Route as ProtectedRouteRouteImport } from './routes/_protected/route'
 import { Route as ProtectedIndexRouteImport } from './routes/_protected/index'
 import { Route as PublicSignInRouteImport } from './routes/_public/sign-in'
 import { Route as ProtectedUsersRouteImport } from './routes/_protected/users'
+import { Route as ProtectedNewLocationRouteImport } from './routes/_protected/new-location'
 import { Route as ProtectedLocationsRouteImport } from './routes/_protected/locations'
 import { Route as ProtectedDashboardRouteImport } from './routes/_protected/dashboard'
 
@@ -35,6 +36,11 @@ const ProtectedUsersRoute = ProtectedUsersRouteImport.update({
   path: '/users',
   getParentRoute: () => ProtectedRouteRoute,
 } as any)
+const ProtectedNewLocationRoute = ProtectedNewLocationRouteImport.update({
+  id: '/new-location',
+  path: '/new-location',
+  getParentRoute: () => ProtectedRouteRoute,
+} as any)
 const ProtectedLocationsRoute = ProtectedLocationsRouteImport.update({
   id: '/locations',
   path: '/locations',
@@ -50,12 +56,14 @@ export interface FileRoutesByFullPath {
   '/': typeof ProtectedIndexRoute
   '/dashboard': typeof ProtectedDashboardRoute
   '/locations': typeof ProtectedLocationsRoute
+  '/new-location': typeof ProtectedNewLocationRoute
   '/users': typeof ProtectedUsersRoute
   '/sign-in': typeof PublicSignInRoute
 }
 export interface FileRoutesByTo {
   '/dashboard': typeof ProtectedDashboardRoute
   '/locations': typeof ProtectedLocationsRoute
+  '/new-location': typeof ProtectedNewLocationRoute
   '/users': typeof ProtectedUsersRoute
   '/sign-in': typeof PublicSignInRoute
   '/': typeof ProtectedIndexRoute
@@ -65,20 +73,34 @@ export interface FileRoutesById {
   '/_protected': typeof ProtectedRouteRouteWithChildren
   '/_protected/dashboard': typeof ProtectedDashboardRoute
   '/_protected/locations': typeof ProtectedLocationsRoute
+  '/_protected/new-location': typeof ProtectedNewLocationRoute
   '/_protected/users': typeof ProtectedUsersRoute
   '/_public/sign-in': typeof PublicSignInRoute
   '/_protected/': typeof ProtectedIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/dashboard' | '/locations' | '/users' | '/sign-in'
+  fullPaths:
+    | '/'
+    | '/dashboard'
+    | '/locations'
+    | '/new-location'
+    | '/users'
+    | '/sign-in'
   fileRoutesByTo: FileRoutesByTo
-  to: '/dashboard' | '/locations' | '/users' | '/sign-in' | '/'
+  to:
+    | '/dashboard'
+    | '/locations'
+    | '/new-location'
+    | '/users'
+    | '/sign-in'
+    | '/'
   id:
     | '__root__'
     | '/_protected'
     | '/_protected/dashboard'
     | '/_protected/locations'
+    | '/_protected/new-location'
     | '/_protected/users'
     | '/_public/sign-in'
     | '/_protected/'
@@ -119,6 +141,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedUsersRouteImport
       parentRoute: typeof ProtectedRouteRoute
     }
+    '/_protected/new-location': {
+      id: '/_protected/new-location'
+      path: '/new-location'
+      fullPath: '/new-location'
+      preLoaderRoute: typeof ProtectedNewLocationRouteImport
+      parentRoute: typeof ProtectedRouteRoute
+    }
     '/_protected/locations': {
       id: '/_protected/locations'
       path: '/locations'
@@ -139,6 +168,7 @@ declare module '@tanstack/react-router' {
 interface ProtectedRouteRouteChildren {
   ProtectedDashboardRoute: typeof ProtectedDashboardRoute
   ProtectedLocationsRoute: typeof ProtectedLocationsRoute
+  ProtectedNewLocationRoute: typeof ProtectedNewLocationRoute
   ProtectedUsersRoute: typeof ProtectedUsersRoute
   ProtectedIndexRoute: typeof ProtectedIndexRoute
 }
@@ -146,6 +176,7 @@ interface ProtectedRouteRouteChildren {
 const ProtectedRouteRouteChildren: ProtectedRouteRouteChildren = {
   ProtectedDashboardRoute: ProtectedDashboardRoute,
   ProtectedLocationsRoute: ProtectedLocationsRoute,
+  ProtectedNewLocationRoute: ProtectedNewLocationRoute,
   ProtectedUsersRoute: ProtectedUsersRoute,
   ProtectedIndexRoute: ProtectedIndexRoute,
 }
