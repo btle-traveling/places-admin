@@ -9,7 +9,7 @@ export interface Place {
 	id: string;
 	name: string;
 	description: string | null;
-	image_url: string | null;
+	images: string[];
 	latitude: number | null;
 	longitude: number | null;
 	google_maps_url: string | null;

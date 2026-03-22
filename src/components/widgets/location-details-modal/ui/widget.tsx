@@ -6,7 +6,15 @@ import {
 	DialogDescription,
 } from "@/components/ui/dialog";
 import type { Place } from "@/entities/place";
-import { ExternalLink, MapPin, Tag, Calendar, User, Info } from "lucide-react";
+import {
+	ExternalLink,
+	MapPin,
+	Tag,
+	Calendar,
+	User,
+	Info,
+	Image as ImageIcon,
+} from "lucide-react";
 
 interface LocationDetailsModalProps {
 	location: Place | null;
@@ -34,11 +42,11 @@ export function LocationDetailsModalWidget({
 
 	return (
 		<Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-			<DialogContent className="sm:max-w-2xl overflow-hidden p-0 gap-0">
+			<DialogContent className="sm:max-w-2xl overflow-hidden p-0 gap-0 max-h-[90vh] overflow-y-auto">
 				<div className="relative h-64 w-full">
-					{location.image_url ? (
+					{location.images && location.images.length > 0 ? (
 						<img
-							src={location.image_url}
+							src={location.images[0]}
 							alt={location.name}
 							className="h-full w-full object-cover"
 						/>
@@ -59,12 +67,6 @@ export function LocationDetailsModalWidget({
 						<DialogTitle className="text-2xl font-bold">
 							{location.name}
 						</DialogTitle>
-						<DialogDescription className="flex items-center gap-2 mt-1">
-							<MapPin className="h-4 w-4 text-accent" />
-							{location.latitude && location.longitude
-								? `${location.latitude.toFixed(6)}, ${location.longitude.toFixed(6)}`
-								: "Location coordinates not available"}
-						</DialogDescription>
 					</DialogHeader>
 
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -171,6 +173,30 @@ export function LocationDetailsModalWidget({
 							)}
 						</div>
 					</div>
+
+					{/* Images Section */}
+					{location.images && location.images.length > 1 && (
+						<div className="space-y-3">
+							<h4 className="flex items-center gap-2 text-sm font-semibold">
+								<ImageIcon className="h-4 w-4 text-primary" />
+								Images
+							</h4>
+							<div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+								{location.images.slice(1).map((img, index) => (
+									<div
+										key={img}
+										className="relative aspect-square overflow-hidden rounded-md border bg-muted"
+									>
+										<img
+											src={img}
+											alt={`${location.name} ${index + 2}`}
+											className="h-full w-full object-cover transition-transform hover:scale-110"
+										/>
+									</div>
+								))}
+							</div>
+						</div>
+					)}
 				</div>
 			</DialogContent>
 		</Dialog>

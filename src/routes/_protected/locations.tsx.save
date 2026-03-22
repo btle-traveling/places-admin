@@ -19,6 +19,7 @@ export const Route = createFileRoute("/_protected/locations")({
 	validateSearch: (search) => locationSearchSchema.parse(search),
 	async loader() {
 		const result = await getPlaces({ limit: 100 });
+q
 		if (result.isErr()) {
 			throw new Error(result.error.message);
 		}

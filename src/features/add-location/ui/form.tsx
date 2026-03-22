@@ -34,7 +34,7 @@ export function Form() {
 		defaultValues: {
 			name: "",
 			description: "",
-			image_url: "",
+			images: [] as File[],
 			latitude: undefined as number | undefined,
 			longitude: undefined as number | undefined,
 			google_maps_url: "",
@@ -46,21 +46,24 @@ export function Form() {
 			onSubmit: schema,
 		},
 		onSubmit: async ({ value }) => {
-			const response = await mutationFn({ data: value });
-			if (response.success === false) {
-				toast.error(response.error ?? "Failed to add location.");
-				return;
-			}
-			toast.success("Location added successfully!");
-			navigate({
-				to: "/locations",
-				search: {
-					categories: [],
-					minRating: 0,
-					prices: [],
-					search: "",
+			const result = await mutationFn({ data: value });
+			result.match(
+				() => {
+					toast.success("Location added successfully!");
+					navigate({
+						to: "/locations",
+						search: {
+							categories: [],
+							minRating: 0,
+							prices: [],
+							search: "",
+						},
+					});
 				},
-			});
+				(error) => {
+					toast.error(error.message ?? "Failed to add location.");
+				},
+			);
 		},
 	});
 
@@ -143,25 +146,39 @@ export function Form() {
 							}}
 						/>
 
-						{/* Image URL */}
+						{/* Images */}
 						<form.Field
-							name="image_url"
+							name="images"
 							children={(field) => {
 								const isInvalid =
 									field.state.meta.isTouched && !field.state.meta.isValid;
 								return (
 									<Field data-invalid={isInvalid}>
-										<FieldLabel htmlFor={field.name}>Image URL</FieldLabel>
-										<Input
-											id={field.name}
-											name={field.name}
-											type="url"
-											value={field.state.value}
+										<FieldLabel htmlFor="images-input">Images</FieldLabel>
+										<input
+											id="images-input"
+											type="file"
+											multiple
+											accept="image/*"
 											onBlur={field.handleBlur}
-											onChange={(e) => field.handleChange(e.target.value)}
-											aria-invalid={isInvalid}
-											placeholder="https://example.com/image.jpg"
+											onChange={(e) => {
+												const files = Array.from(e.target.files ?? []);
+												field.handleChange(files);
+											}}
 										/>
+										{field.state.value.length > 0 && (
+											<ul
+												style={{
+													margin: 0,
+													paddingLeft: "1.25rem",
+													fontSize: "0.875rem",
+												}}
+											>
+												{field.state.value.map((file) => (
+													<li key={file.name}>{file.name}</li>
+												))}
+											</ul>
+										)}
 										{isInvalid && (
 											<FieldError errors={field.state.meta.errors} />
 										)}

@@ -26,9 +26,9 @@ export function Widget({ location, onClick }: LocationCardProps) {
 		>
 			{/* Image / Placeholder */}
 			<div className="relative h-48 overflow-hidden">
-				{location.image_url ? (
+				{location.images && location.images.length > 0 ? (
 					<img
-						src={location.image_url}
+						src={location.images[0]}
 						alt={location.name}
 						className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
 					/>
@@ -48,7 +48,7 @@ export function Widget({ location, onClick }: LocationCardProps) {
 			{/* Content */}
 			<div className="space-y-3 p-4">
 				<div>
-					<h3 className="line-clamp-1 font-semibold text-foreground transition-colors group-hover:text-accent">
+					<h3 className="line-clamp-1 font-semibold text-foreground transition-colors">
 						{location.name}
 					</h3>
 					{location.description && (
@@ -70,16 +70,6 @@ export function Widget({ location, onClick }: LocationCardProps) {
 								{cat.name}
 							</span>
 						))}
-					</div>
-				)}
-
-				{/* Coordinates */}
-				{location.latitude != null && location.longitude != null && (
-					<div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-						<MapPin className="h-3.5 w-3.5 text-accent shrink-0" />
-						<span>
-							{location.latitude.toFixed(4)}, {location.longitude.toFixed(4)}
-						</span>
 					</div>
 				)}
 
