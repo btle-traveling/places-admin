@@ -5,7 +5,7 @@ export type Payload = z.infer<typeof schema>;
 export type Response = {
 	name: string;
 	description: string;
-	image_url: string;
+	images: string[];
 	latitude: number;
 	longitude: number;
 	google_maps_url: string;
