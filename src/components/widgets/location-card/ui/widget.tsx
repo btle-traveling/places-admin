@@ -28,7 +28,7 @@ export function Widget({ location, onClick }: LocationCardProps) {
 			<div className="relative h-48 overflow-hidden">
 				{location.images && location.images.length > 0 ? (
 					<img
-						src={location.images[0]}
+						src={location.images[0].url}
 						alt={location.name}
 						className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
 					/>

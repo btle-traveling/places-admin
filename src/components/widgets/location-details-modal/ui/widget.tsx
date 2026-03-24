@@ -6,20 +6,14 @@ import {
 	DialogDescription,
 } from "@/components/ui/dialog";
 import type { Place } from "@/entities/place";
-import {
-	ExternalLink,
-	MapPin,
-	Tag,
-	Calendar,
-	User,
-	Info,
-	Image as ImageIcon,
-} from "lucide-react";
+import { ExternalLink, Tag, User, Info, Calendar } from "lucide-react";
+import { PlaceImages } from "./place-images";
 
 interface LocationDetailsModalProps {
 	location: Place | null;
 	isOpen: boolean;
 	onClose: () => void;
+	onUpdate?: (location: Place) => void;
 }
 
 const STATUS_COLORS: Record<string, string> = {
@@ -32,6 +26,7 @@ export function LocationDetailsModalWidget({
 	location,
 	isOpen,
 	onClose,
+	onUpdate,
 }: LocationDetailsModalProps) {
 	if (!location) return null;
 
@@ -46,7 +41,7 @@ export function LocationDetailsModalWidget({
 				<div className="relative h-64 w-full">
 					{location.images && location.images.length > 0 ? (
 						<img
-							src={location.images[0]}
+							src={location.images[0].url}
 							alt={location.name}
 							className="h-full w-full object-cover"
 						/>
@@ -175,28 +170,14 @@ export function LocationDetailsModalWidget({
 					</div>
 
 					{/* Images Section */}
-					{location.images && location.images.length > 1 && (
-						<div className="space-y-3">
-							<h4 className="flex items-center gap-2 text-sm font-semibold">
-								<ImageIcon className="h-4 w-4 text-primary" />
-								Images
-							</h4>
-							<div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-								{location.images.slice(1).map((img, index) => (
-									<div
-										key={img}
-										className="relative aspect-square overflow-hidden rounded-md border bg-muted"
-									>
-										<img
-											src={img}
-											alt={`${location.name} ${index + 2}`}
-											className="h-full w-full object-cover transition-transform hover:scale-110"
-										/>
-									</div>
-								))}
-							</div>
-						</div>
-					)}
+					<div className="border-t pt-6">
+						<PlaceImages
+							place={location}
+							onUpdate={(updatedLocation) => {
+								onUpdate?.(updatedLocation);
+							}}
+						/>
+					</div>
 				</div>
 			</DialogContent>
 		</Dialog>

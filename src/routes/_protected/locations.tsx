@@ -1,4 +1,5 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
+
 import { z } from "zod";
 import { useState, useMemo } from "react";
 import { SearchBarWidget } from "@/components/widgets/search-bar";
@@ -30,7 +31,9 @@ export const Route = createFileRoute("/_protected/locations")({
 function RouteComponent() {
 	const { places } = Route.useLoaderData();
 	const navigate = Route.useNavigate();
+	const router = useRouter();
 	const { search, categories } = Route.useSearch();
+
 	const [selectedLocation, setSelectedLocation] = useState<Place | null>(null);
 
 	const setSearch = (value: string) => {
@@ -185,6 +188,10 @@ function RouteComponent() {
 				location={selectedLocation}
 				isOpen={!!selectedLocation}
 				onClose={() => setSelectedLocation(null)}
+				onUpdate={(updated) => {
+					setSelectedLocation(updated);
+					router.invalidate();
+				}}
 			/>
 		</div>
 	);
