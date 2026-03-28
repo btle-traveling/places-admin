@@ -1,4 +1,4 @@
-import { AddLocationForm } from "@/features/add-location";
+import { AddLocationForm } from "@/modules/location/features/add-location";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_protected/new-location")({
